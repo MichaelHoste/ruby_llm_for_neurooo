@@ -14,15 +14,21 @@ module RubyLLM
         normalized_temperature = maybe_normalize_temperature(temperature, model)
 
         payload = deep_merge(
-          params,
           render_payload(
             messages,
             tools: tools,
             temperature: normalized_temperature,
             model: model,
             stream: block_given?
-          )
+          ),
+          params
         )
+
+        # puts "-------------"
+        # puts "-------------"
+        # pp payload
+        # puts "-------------"
+        # puts "-------------"
 
         if block_given?
           stream_response connection, payload, &
@@ -31,12 +37,12 @@ module RubyLLM
         end
       end
 
-      def deep_merge(params, payload)
-        params.merge(payload) do |_key, params_value, payload_value|
-          if params_value.is_a?(Hash) && payload_value.is_a?(Hash)
-            deep_merge(params_value, payload_value)
+      def deep_merge(payload, params)
+        payload.merge(params) do |_key, payload_value, params_value|
+          if payload_value.is_a?(Hash) && params_value.is_a?(Hash)
+            deep_merge(payload_value, params_value)
           else
-            payload_value
+            params_value
           end
         end
       end
