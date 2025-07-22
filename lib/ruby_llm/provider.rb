@@ -24,6 +24,8 @@ module RubyLLM
           params
         )
 
+        payload.compact!
+
         # puts "-------------"
         # puts "-------------"
         # pp payload
